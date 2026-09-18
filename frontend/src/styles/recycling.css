@@ -1,0 +1,2457 @@
+
+/* ============================================================
+   SMARTWASTE — RECYCLING PAGE
+   Replacement styling for Recycling.jsx + RoleDashboard.jsx
+   ============================================================ */
+
+:root {
+  --sw-green: #18a957;
+  --sw-green-dark: #128545;
+  --sw-green-soft: #ecf9f1;
+  --sw-blue: #2f80ed;
+  --sw-blue-soft: #edf5ff;
+  --sw-orange: #f59e0b;
+  --sw-orange-soft: #fff7e8;
+  --sw-purple: #8b5cf6;
+  --sw-purple-soft: #f5f0ff;
+  --sw-red: #dc3545;
+  --sw-red-soft: #fff1f2;
+  --sw-ink: #14213d;
+  --sw-text: #334155;
+  --sw-muted: #7b8aa0;
+  --sw-border: #e5eaf0;
+  --sw-bg: #f6f8fb;
+  --sw-white: #ffffff;
+}
+
+/* ============================================================
+   GLOBAL RESET — scoped so AppShell is not disturbed
+   ============================================================ */
+
+.recycling-page,
+.recycling-dashboard-container {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  color: var(--sw-ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+}
+
+.recycling-page *,
+.recycling-dashboard-container * {
+  box-sizing: border-box;
+}
+
+.recycling-page button,
+.recycling-dashboard-container button {
+  font: inherit;
+}
+
+/* ============================================================
+   RECYCLING MANAGEMENT PAGE
+   ============================================================ */
+
+.recycling-page {
+  min-height: calc(100vh - 80px);
+  padding: 34px clamp(20px, 3vw, 42px) 48px;
+  background: var(--sw-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Keep content from becoming excessively wide */
+.recycling-page > * {
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+
+.recycling-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.recycling-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sw-green-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.recycling-heading h1 {
+  margin: 7px 0 0;
+  color: var(--sw-ink);
+  font-size: clamp(1.8rem, 3vw, 2.45rem);
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.recycling-heading p {
+  max-width: 720px;
+  margin: 9px 0 0;
+  color: var(--sw-muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.recycling-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.recycling-primary-btn,
+.recycling-secondary-btn,
+.recycling-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 11px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.recycling-primary-btn {
+  min-height: 44px;
+  padding: 0 17px;
+  border: 1px solid transparent;
+  background: var(--sw-green);
+  color: #fff;
+  box-shadow: 0 5px 14px rgba(24, 169, 87, 0.18);
+}
+
+.recycling-primary-btn:hover:not(:disabled) {
+  background: var(--sw-green-dark);
+  transform: translateY(-1px);
+}
+
+.recycling-secondary-btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--sw-border);
+  background: #fff;
+  color: var(--sw-text);
+}
+
+.recycling-secondary-btn:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.recycling-icon-btn {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--sw-border);
+  background: #fff;
+  color: var(--sw-text);
+}
+
+.recycling-icon-btn:hover:not(:disabled) {
+  color: var(--sw-green-dark);
+  border-color: #b8dfc8;
+  background: var(--sw-green-soft);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+
+.recycling-alert {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 50px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.recycling-alert button {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.recycling-alert--error {
+  border: 1px solid #fecaca;
+  background: var(--sw-red-soft);
+  color: #b42318;
+}
+
+.recycling-alert--success {
+  border: 1px solid #bbebca;
+  background: var(--sw-green-soft);
+  color: #14743d;
+}
+
+/* ============================================================
+   STATISTICS GRID
+   IMPORTANT: This fixes the mismatch between
+   Recycling.jsx (.recycling-stat-grid / .recycling-stat-icon)
+   and the older CSS (.recycling-summary-grid).
+   ============================================================ */
+
+.recycling-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.recycling-stat-card {
+  min-width: 0;
+  min-height: 132px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 21px;
+  border: 1px solid var(--sw-border);
+  border-radius: 18px;
+  background: var(--sw-white);
+  box-shadow: 0 7px 25px rgba(20, 39, 68, 0.045);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.recycling-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(20, 39, 68, 0.08);
+}
+
+.recycling-stat-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--sw-green-soft);
+  color: var(--sw-green-dark);
+}
+
+.recycling-stat-icon--green {
+  background: var(--sw-green-soft);
+  color: var(--sw-green-dark);
+}
+
+.recycling-stat-icon--blue {
+  background: var(--sw-blue-soft);
+  color: var(--sw-blue);
+}
+
+.recycling-stat-icon--orange {
+  background: var(--sw-orange-soft);
+  color: var(--sw-orange);
+}
+
+.recycling-stat-icon--purple {
+  background: var(--sw-purple-soft);
+  color: var(--sw-purple);
+}
+
+.recycling-stat-card > div:last-child {
+  min-width: 0;
+}
+
+.recycling-stat-card span {
+  display: block;
+  color: #64748b;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.recycling-stat-card strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--sw-ink);
+  font-size: clamp(1.35rem, 2vw, 1.72rem);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.recycling-stat-card p {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+/* ============================================================
+   WORKSPACE
+   ============================================================ */
+
+.recycling-workspace {
+  overflow: hidden;
+  border: 1px solid var(--sw-border);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 7px 25px rgba(20, 39, 68, 0.045);
+}
+
+.recycling-tabs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 66px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #edf1f5;
+  background: #fff;
+  overflow-x: auto;
+}
+
+.recycling-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #66758a;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.recycling-tabs button:hover {
+  background: #f4f7f9;
+  color: var(--sw-ink);
+}
+
+.recycling-tabs button.active {
+  background: var(--sw-green-soft);
+  color: var(--sw-green-dark);
+}
+
+.recycling-tabs button span {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #d9f2e2;
+  color: var(--sw-green-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.recycling-toolbar {
+  padding: 18px 20px;
+  border-bottom: 1px solid #edf1f5;
+  background: #fbfcfd;
+}
+
+.recycling-search {
+  width: 100%;
+  min-height: 46px;
+  max-width: 620px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--sw-border);
+  border-radius: 11px;
+  background: #fff;
+  color: #8a98aa;
+}
+
+.recycling-search:focus-within {
+  border-color: #94d5ac;
+  box-shadow: 0 0 0 3px rgba(24, 169, 87, 0.09);
+}
+
+.recycling-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--sw-text);
+  font: inherit;
+}
+
+.recycling-search input::placeholder {
+  color: #a0acbb;
+}
+
+/* ============================================================
+   OVERVIEW
+   ============================================================ */
+
+.recycling-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding: 22px;
+}
+
+.recycling-overview-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  min-width: 0;
+  padding: 21px;
+  border: 1px solid #e9eef3;
+  border-radius: 16px;
+  background: #fbfdfc;
+}
+
+.recycling-overview-card__icon {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--sw-green-soft);
+  color: var(--sw-green-dark);
+}
+
+.recycling-overview-card span {
+  display: block;
+  color: #718096;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+
+.recycling-overview-card strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--sw-ink);
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.recycling-overview-card p {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   TABLE CARDS
+   ============================================================ */
+
+.recycling-table-card {
+  width: 100%;
+  background: #fff;
+}
+
+.recycling-table-header {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 22px;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.recycling-table-header h2 {
+  margin: 0;
+  color: var(--sw-ink);
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+
+.recycling-table-header p {
+  margin: 5px 0 0;
+  color: var(--sw-muted);
+  font-size: 0.82rem;
+}
+
+.recycling-table-header > strong {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: var(--sw-green-soft);
+  color: var(--sw-green-dark);
+  font-size: 0.76rem;
+}
+
+.recycling-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.recycling-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+}
+
+.recycling-table th,
+.recycling-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid #edf1f5;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.recycling-table th {
+  color: #7b899b;
+  background: #fafbfc;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.recycling-table td {
+  color: #334155;
+  font-size: 0.86rem;
+}
+
+.recycling-table tbody tr:hover {
+  background: #fbfdfc;
+}
+
+.recycling-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.recycling-table td strong {
+  color: var(--sw-ink);
+  font-weight: 700;
+}
+
+.recycling-empty {
+  padding: 50px 20px !important;
+  color: #94a3b8;
+  text-align: center !important;
+}
+
+/* ============================================================
+   STATUS BADGES
+   ============================================================ */
+
+.recycling-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.recycling-status--received {
+  background: #edf5ff;
+  color: #2563eb;
+}
+
+.recycling-status--processing {
+  background: #fff7e8;
+  color: #b76b00;
+}
+
+.recycling-status--processed {
+  background: var(--sw-green-soft);
+  color: #168044;
+}
+
+.recycling-status--rejected {
+  background: #fff1f2;
+  color: #b42318;
+}
+
+.recycling-status--sold {
+  background: #f5f0ff;
+  color: #7546d8;
+}
+
+/* ============================================================
+   EMPTY / LOADING STATES
+   ============================================================ */
+
+.recycling-loading {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--sw-muted);
+  font-weight: 600;
+}
+
+.recycling-empty-state {
+  padding: 55px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.recycling-empty-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: var(--sw-green-soft);
+  color: var(--sw-green-dark);
+}
+
+.recycling-empty-state h3 {
+  margin: 15px 0 5px;
+  color: var(--sw-ink);
+  font-size: 1rem;
+}
+
+.recycling-empty-state p {
+  max-width: 520px;
+  margin: 0;
+  color: var(--sw-muted);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+/* ============================================================
+   ROLE DASHBOARD — recycling company
+   ============================================================ */
+
+.recycling-dashboard-container {
+  width: 100%;
+  min-height: 100%;
+  padding: 32px clamp(20px, 3vw, 40px) 48px;
+  background: var(--sw-bg);
+}
+
+.recycling-dashboard-container > * {
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.welcome-banner {
+  width: 100%;
+  min-height: 235px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 42px 48px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #168b46 0%, #20a455 100%);
+  box-shadow: 0 18px 40px rgba(22, 139, 70, 0.18);
+}
+
+.banner-text {
+  min-width: 0;
+}
+
+.kicker-text {
+  margin: 0 0 13px;
+  color: rgba(255,255,255,0.88);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.welcome-banner h1 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.subtitle-text {
+  max-width: 720px;
+  margin: 13px 0 0;
+  color: rgba(255,255,255,0.88);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.banner-icon-wrapper {
+  width: 112px;
+  height: 112px;
+  min-width: 112px;
+  display: grid;
+  place-items: center;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.stat-cards-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.stat-card {
+  min-width: 0;
+  min-height: 138px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--sw-border);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 7px 25px rgba(20,39,68,0.045);
+}
+
+.stat-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+}
+
+.bg-green-light {
+  background: var(--sw-green-soft);
+  color: var(--sw-green-dark);
+}
+
+.bg-blue-light {
+  background: var(--sw-blue-soft);
+  color: var(--sw-blue);
+}
+
+.bg-orange-light {
+  background: var(--sw-orange-soft);
+  color: var(--sw-orange);
+}
+
+.bg-purple-light {
+  background: var(--sw-purple-soft);
+  color: var(--sw-purple);
+}
+
+.stat-content {
+  min-width: 0;
+}
+
+.stat-label {
+  margin: 0;
+  color: #66758a;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.stat-value {
+  margin: 7px 0 0;
+  color: var(--sw-ink);
+  font-size: clamp(1.55rem, 2.5vw, 2rem);
+  line-height: 1.05;
+  font-weight: 800;
+}
+
+.stat-subtext {
+  margin: 7px 0 0;
+  color: #9aa6b6;
+  font-size: 0.77rem;
+  line-height: 1.45;
+}
+
+.quick-actions-section {
+  width: 100%;
+  margin-top: 30px;
+}
+
+.section-header {
+  margin-bottom: 16px;
+}
+
+.section-kicker {
+  margin: 0 0 5px;
+  color: var(--sw-green-dark);
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.section-title {
+  margin: 0;
+  color: var(--sw-ink);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.action-cards-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.action-card {
+  min-width: 0;
+  min-height: 145px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22px;
+  border: 1px solid var(--sw-border);
+  border-radius: 18px;
+  background: #fff;
+  color: var(--sw-ink);
+  text-decoration: none;
+  box-shadow: 0 7px 25px rgba(20,39,68,0.04);
+  transition: 0.2s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-3px);
+  border-color: #bde3cb;
+  box-shadow: 0 13px 30px rgba(20,39,68,0.08);
+}
+
+.action-icon-box {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--sw-green-soft);
+  color: var(--sw-green-dark);
+}
+
+.action-card h4 {
+  margin: 14px 0 0;
+  color: var(--sw-ink);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.action-card p {
+  margin: 5px 0 0;
+  color: var(--sw-muted);
+  font-size: 0.78rem;
+}
+
+/* Collector duty button */
+.duty-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.duty-toggle-btn.btn-danger {
+  background: #fff;
+  color: #b42318;
+}
+
+.duty-toggle-btn.btn-light {
+  background: rgba(255,255,255,0.16);
+  color: #fff;
+}
+
+/* =========================================================
+   RECYCLING MODAL
+   ========================================================= */
+
+.recycling-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(5px);
+
+  overflow-y: auto;
+}
+
+.recycling-modal {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+  border-radius: 24px;
+
+  box-shadow:
+    0 25px 60px rgba(15, 23, 42, 0.25),
+    0 8px 25px rgba(15, 23, 42, 0.12);
+
+  overflow: hidden;
+}
+
+/* Header */
+
+.recycling-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  padding: 28px 32px 22px;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  flex-shrink: 0;
+}
+
+.recycling-modal-header-text {
+  min-width: 0;
+}
+
+.recycling-modal-kicker {
+  margin: 0 0 7px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+
+  letter-spacing: 0.02em;
+}
+
+.recycling-modal-title {
+  margin: 0;
+
+  font-size: 26px;
+  line-height: 1.25;
+  font-weight: 750;
+
+  color: #172554;
+}
+
+.recycling-modal-close {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  margin-left: 20px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #334155;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.recycling-modal-close:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* Body */
+
+.recycling-modal-body {
+  padding: 28px 32px;
+
+  overflow-y: auto;
+
+  flex: 1;
+  min-height: 0;
+}
+
+/* Pickup information cards */
+
+.recycling-modal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+
+  margin-bottom: 28px;
+}
+
+.recycling-modal-info-card {
+  padding: 20px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+
+  background: #f8fafc;
+}
+
+.recycling-modal-info-label {
+  margin: 0 0 8px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  color: #64748b;
+}
+
+.recycling-modal-info-value {
+  margin: 0;
+
+  font-size: 17px;
+  line-height: 1.4;
+  font-weight: 700;
+
+  color: #172554;
+
+  word-break: break-word;
+}
+
+/* Form */
+
+.recycling-form-group {
+  margin-bottom: 22px;
+}
+
+.recycling-form-label {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+
+  margin-bottom: 9px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #172554;
+}
+
+.recycling-form-label span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.recycling-form-input,
+.recycling-form-textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border: 1px solid #dbe3ec;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  color: #172554;
+
+  font-family: inherit;
+  font-size: 16px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.recycling-form-input {
+  height: 58px;
+  padding: 0 17px;
+}
+
+.recycling-form-textarea {
+  min-height: 130px;
+  padding: 15px 17px;
+
+  resize: vertical;
+}
+
+.recycling-form-input:focus,
+.recycling-form-textarea:focus {
+  border-color: #16a34a;
+
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.10);
+}
+
+/* Help text */
+
+.recycling-form-help {
+  margin: 8px 0 0;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  color: #94a3b8;
+}
+
+/* Error */
+
+.recycling-form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  margin-top: 18px;
+  padding: 13px 15px;
+
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+
+  background: #fef2f2;
+
+  color: #b91c1c;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.recycling-form-error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Footer */
+
+.recycling-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+
+  padding: 20px 32px;
+
+  border-top: 1px solid #e5e7eb;
+
+  background: #ffffff;
+
+  flex-shrink: 0;
+}
+
+.recycling-modal-btn {
+  min-height: 48px;
+
+  padding: 0 22px;
+
+  border-radius: 12px;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.recycling-modal-btn:hover {
+  transform: translateY(-1px);
+}
+
+.recycling-modal-btn-secondary {
+  border: 1px solid #dbe3ec;
+  background: #ffffff;
+  color: #334155;
+}
+
+.recycling-modal-btn-primary {
+  border: none;
+  background: #16a34a;
+  color: #ffffff;
+
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.20);
+}
+
+.recycling-modal-btn-primary:hover {
+  background: #15803d;
+}
+
+.recycling-modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================================================
+   RESPONSIVE MODAL
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .recycling-modal-backdrop {
+    padding: 12px;
+    align-items: center;
+  }
+
+  .recycling-modal {
+    max-height: calc(100vh - 24px);
+    border-radius: 18px;
+  }
+
+  .recycling-modal-header {
+    padding: 22px 20px 18px;
+  }
+
+  .recycling-modal-title {
+    font-size: 22px;
+  }
+
+  .recycling-modal-body {
+    padding: 22px 20px;
+  }
+
+  .recycling-modal-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recycling-modal-footer {
+    padding: 16px 20px;
+    flex-direction: column-reverse;
+  }
+
+  .recycling-modal-btn {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+.animate-fade-in {
+  animation: recyclingFadeIn 0.35s ease-out;
+}
+
+.animate-scale-up {
+  animation: recyclingScaleUp 0.22s ease-out;
+}
+
+.animate-spin,
+.spin {
+  animation: recyclingSpin 0.9s linear infinite;
+}
+
+@keyframes recyclingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes recyclingFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes recyclingScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1200px) {
+  .recycling-stat-grid,
+  .stat-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .action-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .recycling-overview {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 850px) {
+  .recycling-page,
+  .recycling-dashboard-container {
+    padding: 24px 18px 36px;
+  }
+
+  .recycling-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recycling-heading-actions {
+    width: 100%;
+  }
+
+  .recycling-heading-actions .recycling-secondary-btn {
+    width: 100%;
+  }
+
+  .welcome-banner {
+    min-height: auto;
+    padding: 32px 28px;
+    border-radius: 22px;
+  }
+
+  .banner-icon-wrapper {
+    width: 82px;
+    height: 82px;
+    min-width: 82px;
+    border-radius: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  .recycling-stat-grid,
+  .stat-cards-grid,
+  .action-cards-grid,
+  .recycling-form {
+    grid-template-columns: 1fr;
+  }
+
+  .recycling-page,
+  .recycling-dashboard-container {
+    padding: 20px 14px 32px;
+  }
+
+  .welcome-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 22px;
+  }
+
+  .banner-icon-wrapper {
+    align-self: flex-end;
+  }
+
+  .recycling-stat-card,
+  .stat-card {
+    min-height: 120px;
+  }
+
+  .recycling-overview {
+    padding: 16px;
+  }
+
+  .recycling-table-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recycling-modal {
+    padding: 22px;
+    border-radius: 16px;
+  }
+
+  .recycling-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .recycling-modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .recycling-tabs {
+    padding: 8px;
+  }
+
+  .recycling-tabs button {
+    padding: 0 11px;
+    font-size: 0.82rem;
+  }
+
+  .recycling-stat-card,
+  .stat-card {
+    padding: 18px;
+  }
+
+  .recycling-stat-icon,
+  .stat-icon-wrapper {
+    width: 43px;
+    height: 43px;
+    min-width: 43px;
+  }
+}
+/* ============================================================
+   RECEIVE MATERIAL MODAL — CORRECTED
+   ============================================================ */
+
+.recycling-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100vw;
+  height: 100vh;
+
+  padding: 24px;
+
+  background: rgba(15, 23, 42, 0.68);
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  overflow-y: auto;
+}
+
+
+.recycling-modal {
+  position: relative;
+
+  width: min(680px, 100%);
+
+  max-height: calc(100vh - 48px);
+
+  overflow-y: auto;
+
+  margin: auto;
+
+  padding: 32px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 30px 80px rgba(15, 23, 42, 0.28);
+
+  color: var(--sw-ink);
+
+  animation: recyclingModalIn 0.22s ease-out;
+}
+
+
+@keyframes recyclingModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ------------------------------------------------------------
+   MODAL HEADER
+   ------------------------------------------------------------ */
+
+.recycling-modal-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid #edf1f5;
+}
+
+
+.recycling-modal-title-block {
+  min-width: 0;
+}
+
+
+.recycling-modal-title-block .modal-kicker {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--sw-green-dark);
+
+  font-size: 0.74rem;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+
+.recycling-modal-heading h2 {
+  margin: 0;
+
+  color: var(--sw-ink);
+
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+
+  line-height: 1.2;
+
+  font-weight: 800;
+
+  letter-spacing: -0.025em;
+}
+
+
+.recycling-modal-title-block p {
+  margin: 8px 0 0;
+
+  max-width: 520px;
+
+  color: var(--sw-muted);
+
+  font-size: 0.88rem;
+
+  line-height: 1.55;
+}
+
+
+/* ------------------------------------------------------------
+   CLOSE BUTTON
+   ------------------------------------------------------------ */
+
+.recycling-modal .recycling-icon-btn {
+  flex: 0 0 auto;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+
+/* ------------------------------------------------------------
+   PICKUP SUMMARY
+   ------------------------------------------------------------ */
+
+.recycling-modal-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-bottom: 24px;
+}
+
+
+.recycling-modal-summary-item {
+  min-width: 0;
+
+  padding: 15px 16px;
+
+  border: 1px solid #e7edf2;
+
+  border-radius: 13px;
+
+  background: #f8fafb;
+}
+
+
+.recycling-modal-summary-item span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #718096;
+
+  font-size: 0.72rem;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.045em;
+}
+
+
+.recycling-modal-summary-item strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: var(--sw-ink);
+
+  font-size: 0.91rem;
+
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ------------------------------------------------------------
+   MODAL FORM
+   ------------------------------------------------------------ */
+
+.recycling-modal-form {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+
+  width: 100%;
+}
+
+
+/*
+   IMPORTANT:
+   The JSX uses .recycling-field.
+   This fixes the distorted inline fields.
+*/
+
+.recycling-field {
+  display: flex;
+
+  flex-direction: column;
+
+  width: 100%;
+
+  min-width: 0;
+
+  gap: 8px;
+
+  margin: 0;
+}
+
+
+.recycling-field > span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #334155;
+
+  font-size: 0.86rem;
+
+  font-weight: 700;
+
+  line-height: 1.4;
+}
+
+
+.recycling-field > span small {
+  color: #94a3b8;
+
+  font-size: 0.72rem;
+
+  font-weight: 600;
+}
+
+
+/* ------------------------------------------------------------
+   INPUTS
+   ------------------------------------------------------------ */
+
+.recycling-field input,
+.recycling-field textarea {
+  display: block;
+
+  width: 100%;
+
+  max-width: 100%;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d9e1e8;
+
+  border-radius: 11px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: var(--sw-text);
+
+  font-family: inherit;
+
+  font-size: 0.92rem;
+
+  line-height: 1.45;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+
+.recycling-field input {
+  height: 48px;
+
+  padding: 0 14px;
+}
+
+
+.recycling-field textarea {
+  min-height: 112px;
+
+  padding: 13px 14px;
+
+  resize: vertical;
+}
+
+
+.recycling-field input::placeholder,
+.recycling-field textarea::placeholder {
+  color: #a0aec0;
+}
+
+
+.recycling-field input:focus,
+.recycling-field textarea:focus {
+  border-color: var(--sw-green);
+
+  box-shadow:
+    0 0 0 3px rgba(24, 169, 87, 0.10);
+
+  background: #ffffff;
+}
+
+
+.recycling-field input:disabled,
+.recycling-field textarea:disabled {
+  cursor: not-allowed;
+
+  background: #f8fafc;
+
+  opacity: 0.75;
+}
+
+
+/* ------------------------------------------------------------
+   FIELD HELP
+   ------------------------------------------------------------ */
+
+.recycling-field-help {
+  color: #94a3b8;
+
+  font-size: 0.75rem;
+
+  line-height: 1.45;
+}
+
+
+/* Full-width field */
+
+.recycling-field-full {
+  width: 100%;
+}
+
+
+/* ------------------------------------------------------------
+   MODAL ERROR
+   ------------------------------------------------------------ */
+
+.recycling-modal-error {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  margin-top: 20px;
+
+  padding: 12px 14px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 11px;
+
+  background: #fff1f2;
+
+  color: #b42318;
+
+  font-size: 0.84rem;
+
+  font-weight: 600;
+
+  line-height: 1.45;
+}
+
+
+.recycling-modal-error svg {
+  flex: 0 0 auto;
+
+  margin-top: 1px;
+}
+
+
+/* ------------------------------------------------------------
+   MODAL ACTIONS
+   ------------------------------------------------------------ */
+
+.recycling-modal-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  margin-top: 26px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid #edf1f5;
+}
+
+
+.recycling-modal-actions button {
+  min-height: 46px;
+
+  padding: 0 18px;
+
+  border-radius: 11px;
+
+  font-size: 0.88rem;
+
+  font-weight: 700;
+}
+
+
+.recycling-modal-actions .recycling-primary-btn {
+  min-width: 170px;
+}
+
+
+/* ------------------------------------------------------------
+   MOBILE
+   ------------------------------------------------------------ */
+
+@media (max-width: 700px) {
+
+  .recycling-modal-backdrop {
+    align-items: flex-start;
+
+    padding: 16px;
+  }
+
+
+  .recycling-modal {
+    max-height: calc(100vh - 32px);
+
+    padding: 24px;
+
+    border-radius: 18px;
+  }
+
+
+  .recycling-modal-summary {
+    grid-template-columns: 1fr;
+  }
+
+
+  .recycling-modal-summary-item {
+    padding: 13px 14px;
+  }
+
+
+  .recycling-modal-actions {
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+  }
+
+
+  .recycling-modal-actions button {
+    width: 100%;
+  }
+
+
+  .recycling-modal-actions .recycling-primary-btn {
+    width: 100%;
+  }
+}
+
+
+@media (max-width: 420px) {
+
+  .recycling-modal-backdrop {
+    padding: 10px;
+  }
+
+
+  .recycling-modal {
+    padding: 20px;
+
+    border-radius: 16px;
+  }
+
+
+  .recycling-modal-heading {
+    gap: 12px;
+
+    margin-bottom: 18px;
+  }
+
+
+  .recycling-modal-heading h2 {
+    font-size: 1.25rem;
+  }
+
+
+  .recycling-modal-title-block p {
+    font-size: 0.8rem;
+  }
+
+
+  .recycling-modal .recycling-icon-btn {
+    width: 38px;
+    height: 38px;
+  }
+}
+/* ============================================================
+   RECEIVE MATERIAL MODAL
+   Dedicated styling
+   ============================================================ */
+
+.recycling-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  overflow-y: auto;
+}
+
+/* Main modal */
+.recycling-receive-modal {
+  width: min(720px, 100%);
+
+  max-height: calc(100vh - 48px);
+
+  overflow-y: auto;
+
+  padding: 32px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5eaf0;
+  border-radius: 24px;
+
+  box-shadow:
+    0 30px 80px rgba(15, 23, 42, 0.24),
+    0 10px 30px rgba(15, 23, 42, 0.08);
+
+  color: #14213d;
+
+  animation: recyclingReceiveModalIn 0.22s ease-out;
+}
+
+/* Modal scrollbar */
+.recycling-receive-modal::-webkit-scrollbar {
+  width: 7px;
+}
+
+.recycling-receive-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.recycling-receive-modal::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+.recycling-receive-modal::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
+/* ============================================================
+   MODAL HEADER
+   ============================================================ */
+
+.recycling-receive-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  padding-bottom: 22px;
+
+  border-bottom: 1px solid #edf1f5;
+}
+
+.recycling-receive-modal-title {
+  min-width: 0;
+}
+
+.recycling-modal-kicker {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #168b46;
+
+  font-size: 0.75rem;
+  font-weight: 800;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.recycling-receive-modal-title h2 {
+  margin: 0;
+
+  color: #14213d;
+
+  font-size: clamp(1.45rem, 3vw, 1.85rem);
+  line-height: 1.2;
+
+  font-weight: 800;
+
+  letter-spacing: -0.025em;
+}
+
+.recycling-receive-modal-title p {
+  max-width: 580px;
+
+  margin: 10px 0 0;
+
+  color: #718096;
+
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+
+/* Close button */
+.recycling-modal-close {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #dce4ec;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.recycling-modal-close:hover:not(:disabled) {
+  background: #f0fdf4;
+  border-color: #a7d9ba;
+  color: #168b46;
+  transform: rotate(3deg);
+}
+
+
+/* ============================================================
+   PICKUP SUMMARY
+   ============================================================ */
+
+.recycling-receive-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 14px;
+
+  margin-top: 24px;
+}
+
+.recycling-receive-summary-card {
+  min-width: 0;
+
+  padding: 17px 18px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e4eaf0;
+
+  border-radius: 15px;
+}
+
+.recycling-receive-summary-card span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #718096;
+
+  font-size: 0.7rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+.recycling-receive-summary-card strong {
+  display: block;
+
+  overflow-wrap: anywhere;
+
+  color: #14213d;
+
+  font-size: 0.98rem;
+
+  line-height: 1.35;
+
+  font-weight: 800;
+}
+
+
+/* ============================================================
+   FORM
+   ============================================================ */
+
+.recycling-receive-form {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 22px;
+
+  margin-top: 26px;
+}
+
+.recycling-receive-field {
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.recycling-receive-field label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  color: #253858;
+
+  font-size: 0.9rem;
+
+  font-weight: 750;
+}
+
+.recycling-receive-field label span {
+  color: #8a9ab0;
+
+  font-size: 0.78rem;
+
+  font-weight: 500;
+}
+
+.recycling-receive-field input,
+.recycling-receive-field textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d8e0e8;
+
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  color: #14213d;
+
+  font-family: inherit;
+
+  font-size: 0.95rem;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.recycling-receive-field input {
+  height: 50px;
+
+  padding: 0 15px;
+}
+
+.recycling-receive-field textarea {
+  min-height: 112px;
+
+  padding: 13px 15px;
+
+  resize: vertical;
+
+  line-height: 1.5;
+}
+
+.recycling-receive-field input::placeholder,
+.recycling-receive-field textarea::placeholder {
+  color: #a1aec0;
+}
+
+.recycling-receive-field input:focus,
+.recycling-receive-field textarea:focus {
+  border-color: #28a85a;
+
+  box-shadow:
+    0 0 0 3px rgba(40, 168, 90, 0.1);
+
+  background: #ffffff;
+}
+
+.recycling-receive-field input:disabled,
+.recycling-receive-field textarea:disabled {
+  background: #f8fafc;
+
+  cursor: not-allowed;
+}
+
+.recycling-receive-field small {
+  color: #8a9ab0;
+
+  font-size: 0.78rem;
+
+  line-height: 1.45;
+}
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+.recycling-receive-error {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  margin-top: 20px;
+
+  padding: 13px 15px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 13px;
+
+  background: #fff1f2;
+
+  color: #b42318;
+
+  font-size: 0.87rem;
+
+  font-weight: 600;
+
+  line-height: 1.45;
+}
+
+.recycling-receive-error svg {
+  flex-shrink: 0;
+
+  margin-top: 1px;
+}
+
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+
+.recycling-receive-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  margin-top: 26px;
+
+  padding-top: 22px;
+
+  border-top: 1px solid #edf1f5;
+}
+
+.recycling-receive-actions .recycling-primary-btn,
+.recycling-receive-actions .recycling-secondary-btn {
+  min-height: 46px;
+
+  padding: 0 18px;
+
+  white-space: nowrap;
+}
+
+
+/* ============================================================
+   ANIMATION
+   ============================================================ */
+
+@keyframes recyclingReceiveModalIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* ============================================================
+   RESPONSIVE MODAL
+   ============================================================ */
+
+@media (max-width: 700px) {
+  .recycling-modal-backdrop {
+    align-items: flex-start;
+
+    padding: 14px;
+  }
+
+  .recycling-receive-modal {
+    max-height: calc(100vh - 28px);
+
+    padding: 22px;
+
+    border-radius: 20px;
+  }
+
+  .recycling-receive-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .recycling-receive-actions {
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+  }
+
+  .recycling-receive-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .recycling-receive-modal {
+    padding: 18px;
+
+    border-radius: 18px;
+  }
+
+  .recycling-receive-modal-header {
+    gap: 12px;
+  }
+
+  .recycling-receive-modal-title h2 {
+    font-size: 1.35rem;
+  }
+
+  .recycling-modal-close {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+  }
+
+  .recycling-receive-summary-card {
+    padding: 14px;
+  }
+}

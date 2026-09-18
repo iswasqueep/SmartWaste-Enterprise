@@ -1,0 +1,239 @@
+.portal-login-page {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 90px 20px 45px;
+  background:
+    linear-gradient(140deg, rgba(4, 59, 44, 0.98), rgba(5, 27, 43, 0.99)),
+    #071e2d;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.login-background-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(3px);
+}
+
+.login-shape-one {
+  width: 460px;
+  height: 460px;
+  top: -210px;
+  left: -160px;
+  background: rgba(39, 204, 105, 0.16);
+}
+
+.login-shape-two {
+  width: 380px;
+  height: 380px;
+  right: -160px;
+  bottom: -130px;
+  background: rgba(17, 131, 174, 0.15);
+}
+
+.login-home-link {
+  position: absolute;
+  z-index: 5;
+  top: 32px;
+  left: 38px;
+  color: #d0e0e4;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.login-home-link:hover {
+  color: white;
+}
+
+.login-panel {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 500px);
+  padding: 45px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.34);
+}
+
+.login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #061d2d;
+  text-decoration: none;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.login-brand span {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #1eae55;
+  color: white;
+  font-size: 22px;
+}
+
+.login-heading {
+  margin: 37px 0 31px;
+}
+
+.login-kicker {
+  color: #168346;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.login-heading h1 {
+  margin: 11px 0 11px;
+  color: #061d2d;
+  font-size: 40px;
+  letter-spacing: -0.035em;
+}
+
+.login-heading p {
+  margin: 0;
+  color: #6a798a;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.login-field {
+  margin-bottom: 20px;
+}
+
+.login-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #132638;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.login-field input {
+  width: 100%;
+  min-height: 53px;
+  padding: 0 15px;
+  border: 1px solid #d7e0e5;
+  border-radius: 11px;
+  outline: none;
+  background: #fbfcfd;
+  color: #132638;
+  font-size: 15px;
+  transition:
+    border 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.login-field input:focus {
+  border-color: #1eae55;
+  box-shadow: 0 0 0 4px rgba(30, 174, 85, 0.12);
+}
+
+.login-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.forgot-password {
+  border: 0;
+  background: transparent;
+  color: #168346;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-submit {
+  width: 100%;
+  min-height: 54px;
+  border: 0;
+  border-radius: 11px;
+  background: #1eae55;
+  color: white;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 13px 28px rgba(30, 174, 85, 0.23);
+}
+
+.login-submit:hover {
+  background: #168b47;
+}
+
+.login-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-error {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid #f2c7c7;
+  border-radius: 9px;
+  background: #fff1f1;
+  color: #a83030;
+  font-size: 13px;
+}
+
+.login-security-note {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+  padding: 14px;
+  border-radius: 11px;
+  background: #eff8f2;
+}
+
+.login-security-note p {
+  margin: 0;
+  color: #4d6256;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.demo-credentials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 13px;
+  margin-top: 18px;
+  color: #6a798a;
+  font-size: 11px;
+}
+
+.demo-credentials strong {
+  width: 100%;
+  color: #23384a;
+}
+
+@media (max-width: 600px) {
+  .portal-login-page {
+    align-items: start;
+    padding-top: 85px;
+  }
+
+  .login-home-link {
+    top: 25px;
+    left: 20px;
+  }
+
+  .login-panel {
+    padding: 32px 23px;
+    border-radius: 19px;
+  }
+
+  .login-heading h1 {
+    font-size: 34px;
+  }
+}

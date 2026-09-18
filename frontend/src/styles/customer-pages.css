@@ -1,0 +1,42 @@
+.notification-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.notification-heading h2 {
+  margin: 0;
+}
+
+.notification-heading span {
+  color: #68756d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.empty svg {
+  margin-bottom: 10px;
+  color: #1f8f55;
+}
+
+.list-row.unread {
+  border-radius: 12px;
+  background: #f0f9f3;
+}
+
+.actions {
+  gap: 12px;
+}
+
+.customer-page:not(.customer-profile-page) header button {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.customer-page:not(.customer-profile-page) > header {
+  position: relative;
+  margin-bottom: 22px;
+}
