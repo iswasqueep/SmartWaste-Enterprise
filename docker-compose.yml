@@ -2,26 +2,38 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: smartwaste
-      POSTGRES_USER: smartwaste
-      POSTGRES_PASSWORD: smartwaste
-    volumes: [postgres_data:/var/lib/postgresql/data]
-    ports: ["5432:5432"]
+      POSTGRES_DB: ${POSTGRES_DB:-smartwaste}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql://smartwaste:smartwaste@db:5432/smartwaste
-      SECRET_KEY: change-me
-      JWT_SECRET_KEY: change-me-too
-      FRONTEND_URL: http://localhost:5173
-      PAYMENT_PROVIDER: demo
-    ports: ["5000:5000"]
-    depends_on: [db]
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      FRONTEND_URL: ${FRONTEND_URL}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-demo}
+      PAYSTACK_SECRET_KEY: ${PAYSTACK_SECRET_KEY:-}
+      PAYSTACK_CALLBACK_URL: ${PAYSTACK_CALLBACK_URL:-}
+      RATELIMIT_STORAGE_URI: ${RATELIMIT_STORAGE_URI:-memory://}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
   frontend:
     build: ./frontend
     environment:
-      VITE_API_URL: http://localhost:5000/api
-    ports: ["5173:5173"]
-    depends_on: [backend]
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:

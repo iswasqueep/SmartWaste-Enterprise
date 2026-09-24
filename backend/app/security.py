@@ -30,6 +30,22 @@ def init_security(app):
             "camera=(), microphone=(), geolocation=()",
         )
 
+        response.headers.setdefault(
+    "Content-Security-Policy",
+    (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: blob:; "
+        "font-src 'self' data:; "
+        "connect-src 'self' https:; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "frame-ancestors 'none'; "
+        "form-action 'self';"
+    ),
+)
+
         if request.is_secure or app.config.get("ENVIRONMENT") == "production":
             response.headers.setdefault(
                 "Strict-Transport-Security",

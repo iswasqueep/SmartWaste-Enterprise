@@ -5,6 +5,7 @@ on:
   pull_request:
 
 jobs:
+
   backend:
     runs-on: ubuntu-latest
 
@@ -22,6 +23,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/backend
         run: pytest backend/tests
+
 
   frontend:
     runs-on: ubuntu-latest
@@ -53,3 +55,45 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run backend security tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}/backend
+        run: pytest backend/tests/test_security_baseline.py
+
+      - name: Check for obvious secret files
+        shell: bash
+        run: |
+          if find . \
+            -path './.git' -prune -o \
+            -path './backend/.venv' -prune -o \
+            -path './frontend/node_modules' -prune -o \
+            -type f \( -name '.env' -o -name '.env.*' \) \
+            ! -name '.env.example' \
+            ! -name '.env.production.example' \
+            -print -quit | grep -q .; then
+            echo "ERROR: Real environment file detected in repository."
+            exit 1
+          fi
+
+      - name: Check lockfile for internal registry URLs
+        shell: bash
+        run: |
+          if grep -R "applied-caas-gateway1.internal.api.openai.org" frontend/package-lock.json; then
+            echo "ERROR: Internal package registry URL found in lockfile."
+            exit 1
+          fi
