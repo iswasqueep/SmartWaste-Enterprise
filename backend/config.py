@@ -105,6 +105,27 @@ class Config:
                 "Production PAYMENT_PROVIDER cannot be demo."
             )
 
+        if cls.PAYMENT_PROVIDER == "paystack":
+            if not cls.PAYSTACK_SECRET_KEY:
+                raise RuntimeError(
+                    "Production Paystack configuration requires PAYSTACK_SECRET_KEY."
+                )
+
+            if not cls.PAYSTACK_CALLBACK_URL.startswith("https://"):
+                raise RuntimeError(
+                    "Production PAYSTACK_CALLBACK_URL must use HTTPS."
+                )
+
+        if cls.PAYMENT_PROVIDER not in {"demo", "paystack"}:
+            raise RuntimeError(
+                f"Unsupported PAYMENT_PROVIDER: {cls.PAYMENT_PROVIDER}"
+            )
+
+        if cls.RATELIMIT_STORAGE_URI.startswith("memory://"):
+            raise RuntimeError(
+                "Production rate limiting must use a persistent store such as Redis."
+            )
+
 
 class TestConfig(Config):
     TESTING = True

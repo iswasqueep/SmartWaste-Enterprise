@@ -6,6 +6,7 @@ from flask_jwt_extended import get_jwt_identity
 from sqlalchemy import func
 
 from ..extensions import db
+from ..paystack import PaystackError, initialize_transaction
 from ..models import (
     Address,
     Invoice,
@@ -1061,18 +1062,24 @@ def start_customer_invoice_payment(invoice_id):
         .first()
     )
 
-    if existing_payment:
-        if existing_payment.authorization_url:
+    if existing_payment and existing_payment.authorization_url:
             return jsonify(
                 message="Existing pending payment returned",
-                authorization_url=(
-                    existing_payment.authorization_url
-                ),
+                authorization_url=existing_payment.authorization_url,
                 payment=existing_payment.to_dict(),
             )
+    if existing_payment:
 
         db.session.delete(existing_payment)
         db.session.commit()
+    provider = str(
+        current_app.config.get("PAYMENT_PROVIDER", "demo",)
+    ).strip().lower()
+
+    if provider not in {"demo", "paystack"}:
+        return jsonify(
+            error=f"Unsupported payment provider: {provider}"
+        ),500
 
     transaction_reference = (
         f"SWPAY-{uuid4().hex[:18].upper()}"
@@ -1087,30 +1094,15 @@ def start_customer_invoice_payment(invoice_id):
         )
         or "http://localhost:5173/payments/verify"
     )
-
-    separator = (
-        "&"
-        if "?" in callback_url
-        else "?"
-    )
-
-    authorization_url = (
-        f"{callback_url}"
-        f"{separator}reference={transaction_reference}"
-    )
-
     payment = Payment(
         invoice_id=invoice.id,
         transaction_reference=transaction_reference,
-        provider=current_app.config.get(
-            "PAYMENT_PROVIDER",
-            "demo",
-        ),
+        provider=provider,
         amount=invoice.total,
         currency="NGN",
         payment_method="online",
         status=PaymentStatus.PENDING.value,
-        authorization_url=authorization_url,
+        authorization_url=None,
     )
 
     try:
@@ -1120,7 +1112,37 @@ def start_customer_invoice_payment(invoice_id):
         db.session.rollback()
 
         current_app.logger.exception(
-            "Customer payment initialization failed"
+            "Customer payment record creation failed"
+        )
+
+        return jsonify(
+            error="Unable to initialize payment"
+        ), 500
+     # ---------------------------------------------------------
+    # DEMO PROVIDER
+    # ---------------------------------------------------------
+    if provider == "demo":
+        separator = (
+        "&"
+        if "?" in callback_url
+        else "?"
+    )
+
+    authorization_url = (
+        f"{callback_url}"
+        f"{separator}reference={transaction_reference}"
+    )
+    payment.authorization_url = authorization_url
+
+
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Customer payment initialization failed__Demo"
         )
 
         return jsonify(
@@ -1130,6 +1152,62 @@ def start_customer_invoice_payment(invoice_id):
     return jsonify(
         message="Payment initialized",
         authorization_url=authorization_url,
+        payment=payment.to_dict(),
+    ), 201
+
+
+     # ---------------------------------------------------------
+    # PAYSTACK PROVIDER
+    # ---------------------------------------------------------
+    try:
+        paystack_result = initialize_transaction(
+            secret_key=current_app.config.get(
+                "PAYSTACK_SECRET_KEY",
+                "",
+            ),
+            email=customer.email,
+            amount=invoice.total,
+            currency=payment.currency,
+            reference=transaction_reference,
+            callback_url=callback_url,
+        )
+
+        payment.authorization_url = (
+            paystack_result["authorization_url"]
+        )
+
+        payment.gateway_reference = (
+            paystack_result["reference"]
+        )
+
+        db.session.commit()
+
+    except PaystackError as error:
+        db.session.rollback()
+
+        current_app.logger.error(
+            "Paystack payment initialization failed: %s",
+            error,
+        )
+
+        return jsonify(
+            error="Unable to initialize Paystack payment"
+        ), 502
+
+    except Exception:
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unexpected Paystack payment initialization failure"
+        )
+
+        return jsonify(
+            error="Unable to initialize payment"
+        ), 500
+
+    return jsonify(
+        message="Payment initialized",
+        authorization_url=payment.authorization_url,
         payment=payment.to_dict(),
     ), 201
 

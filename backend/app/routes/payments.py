@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from ..paystack import PaystackError, amount_to_subunit, verify_transaction
 
 from flask import (
     Blueprint,
@@ -168,9 +169,156 @@ def verify_customer_payment():
             invoice=invoice.to_dict(),
         )
 
-    return jsonify(
-        error=(
-            "Live payment verification is not yet configured "
-            f"for provider '{provider}'"
+        if provider == "paystack":
+            secret_key = current_app.config.get(
+            "PAYSTACK_SECRET_KEY",
+            "",
         )
-    ), 501
+
+        if not secret_key:
+            current_app.logger.error(
+                "Paystack verification attempted without a configured secret key"
+            )
+
+            return jsonify(
+                error="Payment provider is not configured"
+            ), 503
+        try:
+            transaction = verify_transaction(
+                secret_key=secret_key,
+                reference=reference,
+            )
+
+        except PaystackError as error:
+            current_app.logger.error(
+                "Paystack verification failed: %s",
+                error,
+            )
+
+            return jsonify(
+                error="Unable to verify payment with Paystack"
+            ), 502
+
+        except Exception:
+            current_app.logger.exception(
+                "Unexpected Paystack verification failure"
+            )
+
+            return jsonify(
+                error="Unable to verify payment"
+            ), 500
+
+        transaction_status = str(
+            transaction.get("status", "")
+        ).strip().lower()
+
+        returned_reference = str(
+            transaction.get("reference", "")
+        ).strip()
+
+        returned_currency = str(
+            transaction.get("currency", "")
+        ).strip().upper()
+
+        returned_amount = transaction.get(
+            "amount"
+        )
+
+        expected_currency = str(
+            payment.currency or "NGN"
+        ).strip().upper()
+
+        expected_amount = amount_to_subunit(
+            payment.amount
+        )
+
+        try:
+            returned_amount = int(
+                returned_amount
+            )
+        except (TypeError, ValueError):
+            returned_amount = None
+
+        # Never mark a payment as successful unless Paystack
+        # confirms the transaction itself.
+        if transaction_status != "success":
+            return jsonify(
+                error="Payment has not been completed",
+                status=transaction_status or "unknown",
+            ), 400
+
+        # Ensure the verified Paystack reference is the
+        # reference belonging to this customer's payment.
+        if returned_reference != reference:
+            current_app.logger.warning(
+                "Paystack reference mismatch for payment %s",
+                payment.id,
+            )
+
+            return jsonify(
+                error="Payment reference verification failed"
+            ), 400
+
+        # Ensure Paystack charged exactly the amount
+        # recorded against this invoice.
+        if returned_amount != expected_amount:
+            current_app.logger.warning(
+                "Paystack amount mismatch for payment %s",
+                payment.id,
+            )
+
+            return jsonify(
+                error="Payment amount verification failed"
+            ), 400
+
+        # Ensure the currency matches the invoice/payment.
+        if returned_currency != expected_currency:
+            current_app.logger.warning(
+                "Paystack currency mismatch for payment %s",
+                payment.id,
+            )
+
+            return jsonify(
+                error="Payment currency verification failed"
+            ), 400
+
+        payment.status = PaymentStatus.PAID.value
+        payment.gateway_reference = (
+            str(transaction.get("id"))
+            if transaction.get("id") is not None
+            else payment.gateway_reference
+        )
+
+        payment.paid_at = datetime.now(
+            timezone.utc
+        )
+
+        invoice.status = PaymentStatus.PAID.value
+
+        if hasattr(invoice, "paid_at"):
+            invoice.paid_at = datetime.now(
+                timezone.utc
+            )
+
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+            current_app.logger.exception(
+                "Paystack payment synchronization failed"
+            )
+
+            return jsonify(
+                error="Unable to complete payment verification"
+            ), 500
+
+        return jsonify(
+            message="Payment verified successfully",
+            payment=payment.to_dict(),
+            invoice=invoice.to_dict(),
+        )
+
+    return jsonify(
+        error=f"Unsupported payment provider '{provider}'"
+    ), 500
