@@ -1010,12 +1010,10 @@ def customer_payments():
     )
 
 
-@customer_bp.post(
-    "/customer/invoices/<int:invoice_id>/pay"
-)
+@customer_bp.post("/customer/invoices/<int:invoice_id>/pay")
 @role_required(Role.CUSTOMER.value)
 def start_customer_invoice_payment(invoice_id):
-    """Initialize payment for a customer-owned invoice."""
+    """Initialize demo payment for a customer-owned invoice."""
 
     customer, error_response = get_current_customer()
 
@@ -1063,23 +1061,15 @@ def start_customer_invoice_payment(invoice_id):
     )
 
     if existing_payment and existing_payment.authorization_url:
-            return jsonify(
-                message="Existing pending payment returned",
-                authorization_url=existing_payment.authorization_url,
-                payment=existing_payment.to_dict(),
-            )
-    if existing_payment:
+        return jsonify(
+            message="Existing pending payment returned",
+            authorization_url=existing_payment.authorization_url,
+            payment=existing_payment.to_dict(),
+        )
 
+    if existing_payment:
         db.session.delete(existing_payment)
         db.session.commit()
-    provider = str(
-        current_app.config.get("PAYMENT_PROVIDER", "demo",)
-    ).strip().lower()
-
-    if provider not in {"demo", "paystack"}:
-        return jsonify(
-            error=f"Unsupported payment provider: {provider}"
-        ),500
 
     transaction_reference = (
         f"SWPAY-{uuid4().hex[:18].upper()}"
@@ -1094,20 +1084,33 @@ def start_customer_invoice_payment(invoice_id):
         )
         or "http://localhost:5173/payments/verify"
     )
+
+    separator = (
+        "&"
+        if "?" in callback_url
+        else "?"
+    )
+
+    authorization_url = (
+        f"{callback_url}"
+        f"{separator}reference={transaction_reference}"
+    )
+
     payment = Payment(
         invoice_id=invoice.id,
         transaction_reference=transaction_reference,
-        provider=provider,
+        provider="demo",
         amount=invoice.total,
         currency="NGN",
         payment_method="online",
         status=PaymentStatus.PENDING.value,
-        authorization_url=None,
+        authorization_url=authorization_url,
     )
 
     try:
         db.session.add(payment)
         db.session.commit()
+
     except Exception:
         db.session.rollback()
 
@@ -1118,96 +1121,10 @@ def start_customer_invoice_payment(invoice_id):
         return jsonify(
             error="Unable to initialize payment"
         ), 500
-     # ---------------------------------------------------------
-    # DEMO PROVIDER
-    # ---------------------------------------------------------
-    if provider == "demo":
-        separator = (
-        "&"
-        if "?" in callback_url
-        else "?"
-    )
-
-    authorization_url = (
-        f"{callback_url}"
-        f"{separator}reference={transaction_reference}"
-    )
-    payment.authorization_url = authorization_url
-
-
-
-    try:
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
-
-        current_app.logger.exception(
-            "Customer payment initialization failed__Demo"
-        )
-
-        return jsonify(
-            error="Unable to initialize payment"
-        ), 500
 
     return jsonify(
         message="Payment initialized",
         authorization_url=authorization_url,
-        payment=payment.to_dict(),
-    ), 201
-
-
-     # ---------------------------------------------------------
-    # PAYSTACK PROVIDER
-    # ---------------------------------------------------------
-    try:
-        paystack_result = initialize_transaction(
-            secret_key=current_app.config.get(
-                "PAYSTACK_SECRET_KEY",
-                "",
-            ),
-            email=customer.email,
-            amount=invoice.total,
-            currency=payment.currency,
-            reference=transaction_reference,
-            callback_url=callback_url,
-        )
-
-        payment.authorization_url = (
-            paystack_result["authorization_url"]
-        )
-
-        payment.gateway_reference = (
-            paystack_result["reference"]
-        )
-
-        db.session.commit()
-
-    except PaystackError as error:
-        db.session.rollback()
-
-        current_app.logger.error(
-            "Paystack payment initialization failed: %s",
-            error,
-        )
-
-        return jsonify(
-            error="Unable to initialize Paystack payment"
-        ), 502
-
-    except Exception:
-        db.session.rollback()
-
-        current_app.logger.exception(
-            "Unexpected Paystack payment initialization failure"
-        )
-
-        return jsonify(
-            error="Unable to initialize payment"
-        ), 500
-
-    return jsonify(
-        message="Payment initialized",
-        authorization_url=payment.authorization_url,
         payment=payment.to_dict(),
     ), 201
 

@@ -99,12 +99,6 @@ class Config:
             raise RuntimeError(
                 "Production FRONTEND_URL must be the deployed HTTPS frontend."
             )
-
-        if cls.PAYMENT_PROVIDER == "demo":
-            raise RuntimeError(
-                "Production PAYMENT_PROVIDER cannot be demo."
-            )
-
         if cls.PAYMENT_PROVIDER == "paystack":
             if not cls.PAYSTACK_SECRET_KEY:
                 raise RuntimeError(
