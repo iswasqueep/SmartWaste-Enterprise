@@ -90,9 +90,9 @@ export default function Register() {
       if (!response.data.requires_approval) {
         window.setTimeout(() => {
           navigate("/login", {
-            state: { registrationMessage: "Registration successful. Sign in with your new details." },
+            state: { registrationMessage: "Registration successful as your account has been created. Sign in with your new details." },
           });
-        }, 1000);
+        }, 3000);
       }
     } catch (requestError) {
       setError(
