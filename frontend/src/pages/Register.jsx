@@ -33,6 +33,25 @@ const initialForm = {
   official_id: "",
 };
 
+function normalizeNigerianPhone(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+
+  if (digits.startsWith("234") && digits.length === 13) {
+    return `+${digits}`;
+  }
+
+  if (digits.length === 11 && digits.startsWith("0")) {
+    return `+234${digits.slice(1)}`;
+  }
+
+  return String(value || "").trim();
+}
+
+function isValidNigerianPhone(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  return /^(?:0(?:70|71|80|81|90|91)\d{8}|234(?:70|71|80|81|90|91)\d{8})$/.test(digits);
+}
+
 const rolesConfig = [
   { id: "customer", label: "Resident / Customer", icon: User, desc: "Request pickups & manage waste" },
   { id: "collector", label: "Waste Collector", icon: Truck, desc: "Manage collection routes & jobs" },
@@ -66,12 +85,21 @@ export default function Register() {
       return;
     }
 
+    if (form.phone.trim() && !isValidNigerianPhone(form.phone)) {
+      setError("Enter a valid Nigerian phone number, e.g. 08012345678 or +2348012345678.");
+      return;
+    }
+
+    const normalizedPhone = form.phone.trim()
+      ? normalizeNigerianPhone(form.phone)
+      : "";
+
     try {
       setLoading(true);
       const response = await api.post("/auth/register", {
         full_name: form.full_name,
         email: form.email,
-        phone: form.phone,
+        phone: normalizedPhone,
         password: form.password,
         role: form.role,
         operating_area: form.operating_area,
@@ -258,6 +286,9 @@ export default function Register() {
                   required 
                 />
               </div>
+              <small style={{ color: "#64748b", fontSize: "0.78rem", marginTop: "2px" }}>
+                Nigerian mobile numbers only. Example: 08012345678 or +2348012345678.
+              </small>
             </label>
           </div>
 
@@ -271,7 +302,9 @@ export default function Register() {
                   type="tel" 
                   value={form.phone} 
                   onChange={handleChange} 
-                  placeholder="+234 ..."
+                  placeholder="08012345678 or +2348012345678"
+                  inputMode="tel"
+                  autoComplete="tel"
                   style={{ width: "100%", padding: "12px 12px 12px 44px", border: "1px solid #cbd5e1", borderRadius: "10px", fontSize: "0.95rem", outline: "none", background: "#fff" }} 
                 />
               </div>

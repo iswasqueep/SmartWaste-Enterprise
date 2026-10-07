@@ -43,6 +43,36 @@ def clean(value):
     return str(value or "").strip()
 
 
+def normalize_nigerian_phone(phone):
+    phone = clean(phone)
+
+    if not phone:
+        return None
+
+    # Remove common formatting characters.
+    phone = re.sub(r"[\s\-\(\)]", "", phone)
+
+    # Nigerian local format:
+    # 08012345678
+    # 08123456789
+    # 09012345678
+    # 09123456789
+    if re.fullmatch(r"0(?:70|71|80|81|90|91)\d{8}", phone):
+        return "+234" + phone[1:]
+
+    # Nigerian international format without +
+    # 2348012345678
+    if re.fullmatch(r"234(?:70|71|80|81|90|91)\d{8}", phone):
+        return "+" + phone
+
+    # Nigerian international format with +
+    # +2348012345678
+    if re.fullmatch(r"\+234(?:70|71|80|81|90|91)\d{8}", phone):
+        return phone
+
+    return None
+
+
 @auth_bp.post("/auth/register")
 @limiter.limit("10 per hour")
 def register():
@@ -55,7 +85,10 @@ def register():
 
     full_name = clean(data.get("full_name"))
     email = clean(data.get("email")).lower()
-    phone = clean(data.get("phone")) or None
+
+    raw_phone = clean(data.get("phone"))
+    phone = normalize_nigerian_phone(raw_phone)
+
     password = str(data.get("password") or "")
     role = clean(data.get("role") or Role.CUSTOMER.value).lower()
 
@@ -67,8 +100,11 @@ def register():
         return jsonify(error="Enter a valid email address"), 400
     if not valid_password(password):
         return jsonify(error="Password must be at least 8 characters and include letters and numbers"), 400
-    if phone and len(phone) > 30:
-        return jsonify(error="Phone number cannot exceed 30 characters"), 400
+
+    if raw_phone and not phone:
+        return jsonify(
+            error="Enter a valid Nigerian phone number, e.g. 08012345678 or +2348012345678"
+        ), 400
 
     duplicate_filter = User.email == email
     if phone:
