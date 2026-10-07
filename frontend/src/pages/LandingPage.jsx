@@ -113,7 +113,7 @@ export default function LandingPage() {
 
           <div className="nav-actions">
             <Link to="/login" className="button button-ghost">
-              Staff login
+              Portal login
             </Link>
 
             <Link to="/register" className="button button-primary">
